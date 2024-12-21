@@ -1,7 +1,7 @@
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,23 +21,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
-
-const formSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  excerpt: z.string().min(1, "Excerpt is required"),
-  content: z.string().min(1, "Content is required"),
-  coverImage: z.string().url("Please enter a valid image URL"),
-  category: z.string().min(1, "Category is required"),
-  tags: z.array(z.string()).default([]),
-});
+import { TagInput } from "@/components/TagInput";
+import { blogFormSchema, type BlogFormValues } from "@/schemas/blogSchema";
 
 const CreateBlog = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<BlogFormValues>({
+    resolver: zodResolver(blogFormSchema),
     defaultValues: {
       title: "",
       excerpt: "",
@@ -48,23 +40,7 @@ const CreateBlog = () => {
     },
   });
 
-  const [tagInput, setTagInput] = React.useState("");
-
-  const addTag = () => {
-    if (tagInput.trim() && !form.getValues().tags.includes(tagInput.trim())) {
-      form.setValue("tags", [...form.getValues().tags, tagInput.trim()]);
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    form.setValue(
-      "tags",
-      form.getValues().tags.filter((tag) => tag !== tagToRemove)
-    );
-  };
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: BlogFormValues) => {
     console.log(values);
     toast({
       title: "Blog post created!",
@@ -161,42 +137,19 @@ const CreateBlog = () => {
             )}
           />
 
-          <div className="space-y-2">
-            <FormLabel>Tags</FormLabel>
-            <div className="flex gap-2">
-              <Input
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                placeholder="Add tags"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addTag();
-                  }
-                }}
+          <FormField
+            control={form.control}
+            name="tags"
+            render={({ field }) => (
+              <TagInput
+                tags={field.value}
+                onAddTag={(tag) => field.onChange([...field.value, tag])}
+                onRemoveTag={(tagToRemove) =>
+                  field.onChange(field.value.filter((tag) => tag !== tagToRemove))
+                }
               />
-              <Button type="button" onClick={addTag}>
-                Add Tag
-              </Button>
-            </div>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {form.watch("tags").map((tag) => (
-                <div
-                  key={tag}
-                  className="flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => removeTag(tag)}
-                    className="text-secondary-foreground/50 hover:text-secondary-foreground"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+            )}
+          />
 
           <Button type="submit" className="w-full">
             Create Post
