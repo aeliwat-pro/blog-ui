@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { X } from "lucide-react";
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -28,6 +29,7 @@ const formSchema = z.object({
   content: z.string().min(1, "Content is required"),
   coverImage: z.string().url("Please enter a valid image URL"),
   category: z.string().min(1, "Category is required"),
+  tags: z.array(z.string()).default([]),
 });
 
 const CreateBlog = () => {
@@ -42,11 +44,27 @@ const CreateBlog = () => {
       content: "",
       coverImage: "",
       category: "",
+      tags: [],
     },
   });
 
+  const [tagInput, setTagInput] = React.useState("");
+
+  const addTag = () => {
+    if (tagInput.trim() && !form.getValues().tags.includes(tagInput.trim())) {
+      form.setValue("tags", [...form.getValues().tags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    form.setValue(
+      "tags",
+      form.getValues().tags.filter((tag) => tag !== tagToRemove)
+    );
+  };
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // Here you would typically send the data to your backend
     console.log(values);
     toast({
       title: "Blog post created!",
@@ -81,10 +99,7 @@ const CreateBlog = () => {
               <FormItem>
                 <FormLabel>Excerpt</FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="Enter a brief description"
-                    {...field}
-                  />
+                  <Textarea placeholder="Enter a brief description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,6 +160,43 @@ const CreateBlog = () => {
               </FormItem>
             )}
           />
+
+          <div className="space-y-2">
+            <FormLabel>Tags</FormLabel>
+            <div className="flex gap-2">
+              <Input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                placeholder="Add tags"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag();
+                  }
+                }}
+              />
+              <Button type="button" onClick={addTag}>
+                Add Tag
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {form.watch("tags").map((tag) => (
+                <div
+                  key={tag}
+                  className="flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md"
+                >
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="text-secondary-foreground/50 hover:text-secondary-foreground"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <Button type="submit" className="w-full">
             Create Post
