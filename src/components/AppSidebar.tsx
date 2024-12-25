@@ -1,4 +1,4 @@
-import { FileText, UserPlus, Users } from "lucide-react";
+import { FileText, UserPlus } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -43,7 +43,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    active={location.pathname === item.url}
+                    data-active={location.pathname === item.url}
                   >
                     <Link to={item.url}>
                       <item.icon />
