@@ -7,6 +7,7 @@ export const posts = [
     readTime: "5 min read",
     date: "2024-02-20",
     category: "Technology",
+    tags: ["Web Development", "AI", "Future Tech"],
     content: `
       # The Future of Web Development
 
@@ -33,6 +34,7 @@ export const posts = [
     readTime: "4 min read",
     date: "2024-02-19",
     category: "Design",
+    tags: ["CSS", "Web Design", "Frontend"],
     content: `
       # Mastering Modern CSS Techniques
 
@@ -59,6 +61,7 @@ export const posts = [
     readTime: "7 min read",
     date: "2024-02-18",
     category: "Accessibility",
+    tags: ["Accessibility", "Web Development", "UX"],
     content: `
       # Building Accessible Web Applications
 

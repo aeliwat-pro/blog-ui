@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Calendar } from "lucide-react";
+import { Clock, Calendar, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface BlogCardProps {
@@ -12,6 +12,7 @@ interface BlogCardProps {
     readTime: string;
     date: string;
     category: string;
+    tags?: string[];
   };
 }
 
@@ -43,6 +44,16 @@ export function BlogCard({ post }: BlogCardProps) {
             <Calendar className="w-4 h-4" />
             <time dateTime={post.date}>{post.date}</time>
           </div>
+          {post.tags && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {post.tags.map((tag) => (
+                <div key={tag} className="flex items-center text-sm text-muted-foreground">
+                  <Tag className="w-3 h-3 mr-1" />
+                  {tag}
+                </div>
+              ))}
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">{post.excerpt}</p>
