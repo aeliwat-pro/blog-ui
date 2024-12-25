@@ -1,11 +1,13 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { posts } from "@/data/posts";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Calendar } from "lucide-react";
+import { Clock, Calendar, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import { Button } from "@/components/ui/button";
 
 const BlogPost = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const post = posts.find((p) => p.id === id);
 
   if (!post) {
@@ -13,7 +15,15 @@ const BlogPost = () => {
   }
 
   return (
-    <article className="min-h-screen">
+    <article className="min-h-screen relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute right-4 top-4 z-50"
+        onClick={() => navigate('/')}
+      >
+        <X className="h-6 w-6" />
+      </Button>
       <div className="h-[60vh] relative overflow-hidden">
         <img
           src={post.coverImage}
