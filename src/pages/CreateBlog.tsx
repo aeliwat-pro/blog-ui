@@ -40,14 +40,60 @@ const CreateBlog = () => {
     },
   });
 
-  const onSubmit = (values: BlogFormValues) => {
-    console.log(values);
-    toast({
-      title: "Blog post created!",
-      description: "Your blog post has been successfully created.",
-    });
-    navigate("/");
-  };
+  // const onSubmit = (values: BlogFormValues) => {
+  //   console.log(values);
+  //   toast({
+  //     title: "Blog post created!",
+  //     description: "Your blog post has been successfully created.",
+  //   });
+  //   navigate("/");
+  // };
+
+    const onSubmit = async (values: BlogFormValues) => {
+
+        // Convert the tags array into a comma-separated string
+        const tagsString = values.tags.join(",");
+
+        // Construct the blog data object to send to the Spring backend
+        const blogData = {
+            title: values.title,
+            excerpt: values.excerpt,
+            content: values.content,
+            coverImage: values.coverImage,
+            category: values.category,
+            tags: tagsString,
+        };
+
+
+        console.log(blogData)
+        try {
+            // Send a POST request to your Spring backend
+            const response = await fetch(`/api/blog/post`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(blogData),
+            });
+
+            if (response.ok) {
+                toast({
+                    title: "Blog post created!",
+                    description: "Your blog post has been successfully created.",
+                });
+                navigate("/"); // Navigate to the home page or any desired page
+            } else {
+                throw new Error("Failed to create blog post");
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "There was an issue creating the blog post. Please try again.",
+                variant: "destructive",
+            });
+            console.error(error);
+        }
+    };
 
   return (
     <div className="container max-w-2xl py-12">
